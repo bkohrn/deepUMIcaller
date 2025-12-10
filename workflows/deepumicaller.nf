@@ -313,11 +313,14 @@ workflow DEEPUMICALLER {
         duplex_filtered_init_bam = SORTBAMAMFILTERED.out.bam
 
         ASMINUSXSDUPLEX.out.discarded_bam.map{[it[0], ch_targetsfile, it[1]]}.set { discarded_bam_targeted }
-        DISCARDEDCOVERAGETARGETED(discarded_bam_targeted, [])
+        
 
         ASMINUSXSDUPLEX.out.discarded_bam.map{[it[0], ch_global_exons_file, it[1]]}.set { discarded_bam }
-        DISCARDEDCOVERAGEGLOBAL(discarded_bam, [])
-
+        
+        if (params.perform_qcs){
+            DISCARDEDCOVERAGETARGETED(discarded_bam_targeted, [])
+            DISCARDEDCOVERAGEGLOBAL(discarded_bam, [])
+        }
     }
 
     if (params.step in ['mapping', 'groupreadsbyumi', 'allmoleculesfile', 'filterconsensus']) {
